@@ -41,8 +41,8 @@ module.exports = class EmblemCompiler
 
         splitName = path.split('-')
         if splitName.length > 1
-          splitName = splitName.slice(0, splitName.length-1)
-          path = splitName.join('/') + '/' + splitName[splitName.length-1]
+          prefixes = splitName.slice(0, splitName.length-1)
+          path = prefixes.join('/') + '/' + splitName[splitName.length-1]
 
         content = @window.Emblem.precompile @window.Ember.Handlebars, data
         result = "Ember.TEMPLATES[#{JSON.stringify(path)}] = Ember.Handlebars.template(#{content});module.exports = module.id;"
