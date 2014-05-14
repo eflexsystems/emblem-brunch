@@ -27,32 +27,34 @@ module.exports = class EmblemCompiler
     null
 
   compile: (data, path, callback) ->
+
     if not @window?
       return callback "files.templates.paths must be set in your config", {}
     try
-      if @ember
-        path = path
-          .replace(new RegExp('\\\\', 'g'), '/')
-          .replace(/^app\//, '')
-          .replace(/^templates\//, '')
-          .replace(/\.\w+$/, '')
-        splitPath = path.split('/')
-        filename = splitPath[splitPath.length - 1]
+      hasInline = data.indexOf('style=') != -1
 
-        if filename.match(/^template/)
-          content = @window.Emblem.precompile @window.Handlebars, data
-          result = "module.exports = Handlebars.template(#{content});"
-        else
-          splitName = filename.split('~')
-          if splitName.length > 1
-            prefixes = splitName.slice(0, splitName.length-1)
-            filename = prefixes.join('/') + '/' + splitName[splitName.length-1]
+      if hasInline
+        throw new Error("inline css in file at path #{path}")
 
-          content = @window.Emblem.precompile @window.Ember.Handlebars, data
-          result = "Ember.TEMPLATES[#{JSON.stringify(filename)}] = Ember.Handlebars.template(#{content});module.exports = module.id;"
-      else
+      path = path
+        .replace(new RegExp('\\\\', 'g'), '/')
+        .replace(/^app\//, '')
+        .replace(/^templates\//, '')
+        .replace(/\.\w+$/, '')
+      splitPath = path.split('/')
+      filename = splitPath[splitPath.length - 1]
+
+      if filename.match(/^template/)
         content = @window.Emblem.precompile @window.Handlebars, data
         result = "module.exports = Handlebars.template(#{content});"
+      else
+        splitName = filename.split('~')
+        if splitName.length > 1
+          prefixes = splitName.slice(0, splitName.length-1)
+          filename = prefixes.join('/') + '/' + splitName[splitName.length-1]
+
+        content = @window.Emblem.precompile @window.Ember.Handlebars, data
+        result = "Ember.TEMPLATES[#{JSON.stringify(filename)}] = Ember.Handlebars.template(#{content});module.exports = module.id;"
     catch err
       error = err
     finally
