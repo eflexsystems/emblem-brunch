@@ -31,7 +31,7 @@ module.exports = class EmblemCompiler
     if not @window?
       return callback "files.templates.paths must be set in your config", {}
     try
-      hasInline = data.indexOf('style=') != -1
+      hasInline = data.indexOf(' style') != -1
 
       if hasInline
         throw new Error("inline css in file at path #{path}")
