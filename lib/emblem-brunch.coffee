@@ -9,7 +9,7 @@ module.exports = class EmblemCompiler
   pattern: /\.(?:emblem)$/
 
   setup: (@config) ->
-    @window = jsdom.jsdom().createWindow()
+    @window = jsdom.jsdom().parentWindow
     paths = @config.files.templates.paths
     if paths.jquery
       @window.run fs.readFileSync paths.jquery, 'utf8'
