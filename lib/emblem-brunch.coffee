@@ -21,10 +21,6 @@ module.exports = class EmblemCompiler
     else
       @ember = false
 
-    @hasModuleWrapper = true
-    if @config?.modules?.wrapper == false
-      @hasModuleWrapper = false
-
   constructor: (@config) ->
     if @config.files.templates?.paths?
       @setup(@config)
@@ -58,10 +54,7 @@ module.exports = class EmblemCompiler
           filename = prefixes.join('/') + '/' + splitName[splitName.length-1]
 
         content = @window.Emblem.precompile @window.Ember.Handlebars, data
-        result = "Ember.TEMPLATES[#{JSON.stringify(filename)}] = Ember.Handlebars.template(#{content});"
-
-        if @hasModuleWrapper
-          result += "module.exports = module.id;"
+        result = "Ember.TEMPLATES[#{JSON.stringify(filename)}] = Ember.Handlebars.template(#{content});module.exports = module.id;"
     catch err
       error = err
     finally
