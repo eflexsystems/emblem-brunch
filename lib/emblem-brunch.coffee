@@ -1,6 +1,7 @@
 sysPath = require 'path'
 fs = require 'fs'
 jsdom = require 'jsdom'
+emblem = require('emblem').default
 
 module.exports = class EmblemCompiler
   brunchPlugin: yes
@@ -9,17 +10,7 @@ module.exports = class EmblemCompiler
   pattern: /\.(?:emblem)$/
 
   setup: (@config) ->
-    @window = jsdom.jsdom().parentWindow
-    paths = @config.files.templates.paths
-    if paths.jquery
-      @window.run fs.readFileSync paths.jquery, 'utf8'
-    @window.run fs.readFileSync paths.handlebars, 'utf8'
-    @window.run fs.readFileSync paths.emblem, 'utf8'
-    if paths.ember
-      @window.run fs.readFileSync paths.ember, 'utf8'
-      @ember = true
-    else
-      @ember = false
+    @templateCompiler = require(@config.files.templates.paths.templateCompiler)
 
   constructor: (@config) ->
     if @config.files.templates?.paths?
@@ -27,9 +18,6 @@ module.exports = class EmblemCompiler
     null
 
   compile: (data, path, callback) ->
-
-    if not @window?
-      return callback "files.templates.paths must be set in your config", {}
     try
       hasInline = data.indexOf(' style') != -1
 
@@ -41,21 +29,21 @@ module.exports = class EmblemCompiler
         .replace(/^app\//, '')
         .replace(/^templates\//, '')
         .replace(/\.\w+$/, '')
+
       splitPath = path.split('/')
-      filename = splitPath[splitPath.length - 1]
+      filename  = splitPath[splitPath.length - 1]
+      splitName = filename.split('~')
 
-      if filename.match(/^template/)
-        content = @window.Emblem.precompile @window.Handlebars, data
-        result = "module.exports = Handlebars.template(#{content});"
-      else
-        splitName = filename.split('~')
-        if splitName.length > 1
-          prefixes = splitName.slice(0, splitName.length-1)
-          filename = prefixes.join('/') + '/' + splitName[splitName.length-1]
+      if splitName.length > 1
+        prefixes = splitName.slice(0, splitName.length-1)
+        filename = prefixes.join('/') + '/' + splitName[splitName.length-1]
 
-        content = @window.Emblem.precompile @window.Ember.Handlebars, data
-        result = "Ember.TEMPLATES[#{JSON.stringify(filename)}] = Ember.Handlebars.template(#{content});module.exports = module.id;"
+      input   = emblem.compile(data)
+      content = @templateCompiler.precompile(input, false)
+      result  = "Ember.TEMPLATES[#{JSON.stringify(filename)}] = Ember.Handlebars.template(#{content});module.exports = module.id;"
+
     catch err
       error = err
     finally
-      callback error, result
+      callback(error, result)
+
