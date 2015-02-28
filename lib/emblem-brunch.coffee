@@ -1,6 +1,5 @@
 sysPath = require 'path'
 fs = require 'fs'
-jsdom = require 'jsdom'
 emblem = require('emblem').default
 
 module.exports = class EmblemCompiler
