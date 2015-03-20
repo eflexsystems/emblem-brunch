@@ -10,9 +10,6 @@
   },
   "main": "./lib/index",
   "scripts": { },
-  "engines": {
-    "node": "~0.6.10 || 0.8 || 0.9 || 0.10 || 0.11"
-  },
   "dependencies": {
     "coffee-script": "1.9.1",
     "emblem": "machty/emblem.js#3272817b512b5c7da1b83f7edba0272a3c353f36"
