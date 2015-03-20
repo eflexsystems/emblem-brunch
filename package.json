@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "coffee-script": "1.9.1",
-    "emblem": "0.5.0"
+    "emblem": "machty/emblem.js#3272817b512b5c7da1b83f7edba0272a3c353f36"
   },
   "devDependencies": {
   }
