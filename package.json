@@ -12,7 +12,7 @@
   "scripts": { },
   "dependencies": {
     "coffee-script": "1.9.1",
-    "emblem": "0.5.0"
+    "emblem": "0.5.1"
   },
   "devDependencies": {
   }
